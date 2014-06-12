@@ -223,7 +223,8 @@ goog.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
 goog.getObjectByName = function(name, opt_obj) {
   var parts = name.split('.');
   var cur = opt_obj || goog.global;
-  for (var part; part = parts.shift(); ) {
+  for (var i = 0; i < parts.length; i++) {
+    var part = parts[i];
     if (goog.isDefAndNotNull(cur[part])) {
       cur = cur[part];
     } else {
