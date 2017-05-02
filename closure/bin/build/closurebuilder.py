@@ -46,7 +46,7 @@ MONETATE_FLAG_PATTERN = r"""
 
   ^(mc\.          # Must be a property of the monetate common namespace. Capture group 1.
   [a-zA-Z]+\.     # Must have it's own module namespace. Capture group 1.
-  [A-Z_]+)        # Must follow the constant format. Capture group 1.
+  [A-Z0-9_]+)     # Must follow the constant format. Capture group 1.
   =(true|false)$  # Must assign a boolean. Capture group 2.
 
 """
