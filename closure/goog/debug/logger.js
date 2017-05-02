@@ -631,11 +631,7 @@ goog.debug.Logger.prototype.logRecord = function(logRecord) {
  * @param {string} msg The message to log.
  * @private
  */
-goog.debug.Logger.prototype.logToSpeedTracer_ = function(msg) {
-  if (goog.global['console'] && goog.global['console']['markTimeline']) {
-    goog.global['console']['markTimeline'](msg);
-  }
-};
+goog.debug.Logger.prototype.logToSpeedTracer_ = function(msg) {};
 
 
 /**
