@@ -25,6 +25,7 @@ goog.provide('goog.style');
 
 goog.require('goog.array');
 goog.require('goog.dom');
+goog.require('goog.events.Event');
 goog.require('goog.math.Box');
 goog.require('goog.math.Coordinate');
 goog.require('goog.math.Rect');
