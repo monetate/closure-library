@@ -151,6 +151,18 @@ goog.json.parse = goog.json.USE_NATIVE_JSON ?
 
 
 /**
+ * Parses a JSON string and returns the result. This uses eval so it is open
+ * to security issues and it should only be used if you trust the source.
+ *
+ * @param {string} s The JSON string to parse.
+ * @return {Object} The object generated from the JSON string.
+ */
+goog.json.unsafeParse = function(s) {
+  return /** @type {Object} */ (eval('(' + s + ')'));
+};
+
+
+/**
  * JSON replacer, as defined in Section 15.12.3 of the ES5 spec.
  * @see http://ecma-international.org/ecma-262/5.1/#sec-15.12.3
  *
