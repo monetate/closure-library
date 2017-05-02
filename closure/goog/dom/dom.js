@@ -337,7 +337,8 @@ goog.dom.DIRECT_ATTRIBUTE_MAP_ = {
   'usemap': 'useMap',
   'frameborder': 'frameBorder',
   'maxlength': 'maxLength',
-  'type': 'type'
+  'type': 'type',
+  'data-redirect': 'data-redirect'
 };
 
 
