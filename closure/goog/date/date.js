@@ -307,13 +307,15 @@ goog.date.setIso8601DateOnly_ = function(d, formatted) {
     return false;
   }
 
-  var year = parts[1];
-  var month = parts[2];
-  var date = parts[3];
-  var dayOfYear = parts[4];
-  var week = parts[5];
+  // Multiplying by 1 is the fastest way to convert to an integer 2014-10-14
+  // see: http://jsperf.com/number-vs-parseint-vs-plus/3
+  var year = parts[1] * 1;
+  var month = parts[2] * 1;
+  var date = parts[3] * 1;
+  var dayOfYear = parts[4] * 1;
+  var week = parts[5] * 1;
   // ISO weekdays start with 1, native getDay() values start with 0
-  var dayOfWeek = parts[6] || 1;
+  var dayOfWeek = parts[6] * 1 || 1;
 
   d.setFullYear(year);
 
@@ -415,10 +417,10 @@ goog.date.setIso8601TimeOnly_ = function(d, formatted) {
     return false;
   }
 
-  d.setHours(parts[1]);
-  d.setMinutes(parts[2] || 0);
-  d.setSeconds(parts[3] || 0);
-  d.setMilliseconds(parts[4] ? parts[4] * 1000 : 0);
+  d.setHours(parts[1] * 1);
+  d.setMinutes(parts[2] * 1 || 0);
+  d.setSeconds(parts[3] * 1 || 0);
+  d.setMilliseconds(parts[4] * 1 ? parts[4] * 1000 : 0);
 
   if (offset != 0) {
     // adjust the date and time according to the specified timezone
