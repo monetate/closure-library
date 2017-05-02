@@ -109,6 +109,11 @@ def _GetOptionsParser():
                     action='store',
                     help=('If specified, write output to this path instead of '
                           'writing to standard output.'))
+  parser.add_option('--monetate_logging_level',
+                    dest='monetate_logging_level',
+                    action='store',
+                    help=('If specified, define logging level. Valid options: '
+                          'DEBUG, INFO, WARNING, ERROR, CRITICAL'))
 
   return parser
 
@@ -195,9 +200,10 @@ def _WrapGoogModuleSource(src):
 
 
 def main():
-  logging.basicConfig(format=(sys.argv[0] + ': %(message)s'),
-                      level=logging.WARNING)
   options, args = _GetOptionsParser().parse_args()
+
+  logging.basicConfig(format=(sys.argv[0] + ': %(message)s'),
+                      level=options.monetate_logging_level or logging.INFO)
 
   # Make our output pipe.
   if options.output_file:
