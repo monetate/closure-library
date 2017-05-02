@@ -57,7 +57,7 @@ goog.json.hybrid.stringify = function(obj) {
  * the supplied {@code fallbackParser} if unsuccessful.
  * @param {string} jsonString JSON string to parse.
  * @param {function(string):Object} fallbackParser Fallback JSON parser used
- *     if native
+ *     if native.
  * @return {!Object} Resulting JSON object.
  * @private
  */
