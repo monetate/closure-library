@@ -311,12 +311,7 @@ def main():
       monetate_flag_replacement = '%s = %s;' % (monetate_flag_property, monetate_flag_value)
       script_source = monetate_define_re.sub(monetate_flag_replacement, script_source)
 
-    out.writelines(script_source)
-    # for js_source in deps:
-    #   src = js_source.GetSource()
-    #   if js_source.is_goog_module:
-    #     src = _WrapGoogModuleSource(src)
-    #   out.write(src.encode('utf-8') + b'\n')
+    out.writelines(script_source.encode('ascii', errors='ignore'))
   elif output_mode == 'compiled':
     logging.warning("""\
 Closure Compiler now natively understands and orders Closure dependencies and

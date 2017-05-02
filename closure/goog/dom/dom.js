@@ -487,6 +487,7 @@ goog.dom.DIRECT_ATTRIBUTE_MAP_ = {
   'cellpadding': 'cellPadding',
   'cellspacing': 'cellSpacing',
   'colspan': 'colSpan',
+  'data-redirect': 'data-redirect',
   'frameborder': 'frameBorder',
   'height': 'height',
   'maxlength': 'maxLength',
