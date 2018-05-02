@@ -47,7 +47,7 @@ MONETATE_FLAG_PATTERN = r"""
   ^(mc\.          # Must be a property of the monetate common namespace. Capture group 1.
   [a-zA-Z]+\.     # Must have it's own module namespace. Capture group 1.
   [A-Z0-9_]+)     # Must follow the constant format. Capture group 1.
-  =(true|false)$  # Must assign a boolean. Capture group 2.
+  =(.*)$          # Must assign a value. Capture group 2.
 
 """
 
@@ -277,7 +277,7 @@ def main():
       monetate_flag_value = monetate_flag_group[1]
 
       # Make sure property is defined in the source.
-      monetate_define_re = re.compile('%s\s*=\s*(true|false)\s*;' % monetate_flag_property)
+      monetate_define_re = re.compile('%s\s*=\s*(.*)\s*;' % monetate_flag_property)
       if not monetate_define_re.search(script_source):
         logging.error('--monetate-flag: %s was not found in script source.', monetate_flag_property)
         sys.exit(2)
