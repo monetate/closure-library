@@ -40,6 +40,18 @@ import jscompiler
 import source
 import treescan
 
+import re
+
+MONETATE_FLAG_PATTERN = r"""
+
+  ^(mc\.          # Must be a property of the monetate common namespace. Capture group 1.
+  [a-zA-Z]+\.     # Must have it's own module namespace. Capture group 1.
+  [A-Z0-9_]+)     # Must follow the constant format. Capture group 1.
+  =(true|false)$  # Must assign a boolean. Capture group 2.
+
+"""
+
+MONETATE_FLAG_RE = re.compile(MONETATE_FLAG_PATTERN, re.X)
 
 def _GetOptionsParser():
   """Get the options parser."""
@@ -109,6 +121,19 @@ def _GetOptionsParser():
                     action='store',
                     help=('If specified, write output to this path instead of '
                           'writing to standard output.'))
+  parser.add_option('--monetate_logging_level',
+                    dest='monetate_logging_level',
+                    action='store',
+                    help=('If specified, define logging level. Valid options: '
+                          'DEBUG, INFO, WARNING, ERROR, CRITICAL'))
+  parser.add_option('--monetate-flag',
+                    dest='monetate_flags',
+                    default=[],
+                    action='append',
+                    help=('Monetate feature flags. '
+                          'If --output_mode=compiled Added as --define= to compiler_flags. '
+                          'If --output_mode=script Substitutes source code manually.'
+                          '@see Makefile'))
 
   return parser
 
@@ -195,9 +220,10 @@ def _WrapGoogModuleSource(src):
 
 
 def main():
-  logging.basicConfig(format=(sys.argv[0] + ': %(message)s'),
-                      level=logging.INFO)
   options, args = _GetOptionsParser().parse_args()
+
+  logging.basicConfig(format=(sys.argv[0] + ': %(message)s'),
+                      level=options.monetate_logging_level or logging.INFO)
 
   # Make our output pipe.
   if options.output_file:
@@ -248,15 +274,44 @@ def main():
   base = _GetClosureBaseFile(sources)
   deps = [base] + tree.GetDependencies(input_namespaces)
 
+  # Get match groups while validating monetate_flags.
+  try:
+    monetate_flag_groups = [MONETATE_FLAG_RE.match(flag).groups() for flag in options.monetate_flags]
+  except AttributeError:
+    logging.error('Invalid --monetate_flag passed must match: %s' % MONETATE_FLAG_PATTERN)
+    sys.exit(2)
+
+  # Check for duplicate monetate_flag properties.
+  if len(set([flag_group[0] for flag_group in monetate_flag_groups])) != len(monetate_flag_groups):
+    logging.error('Duplicate --monetate-flag passed.')
+    sys.exit(2)
+
   output_mode = options.output_mode
   if output_mode == 'list':
     out.writelines([js_source.GetPath() + '\n' for js_source in deps])
   elif output_mode == 'script':
-    for js_source in deps:
-      src = js_source.GetSource()
-      if js_source.is_goog_module:
-        src = _WrapGoogModuleSource(src)
-      out.write(src.encode('utf-8') + b'\n')
+
+    # Join script source as a string so a re substitution can occur.
+    script_source = ''.join([js_source.GetSource() for js_source in deps])
+
+    # Replace source definition with monetate_flag.
+    for monetate_flag_group in monetate_flag_groups:
+
+      # Get flag parts from match groups.
+      monetate_flag_property = monetate_flag_group[0]
+      monetate_flag_value = monetate_flag_group[1]
+
+      # Make sure property is defined in the source.
+      monetate_define_re = re.compile('%s\s*=\s*(true|false)\s*;' % monetate_flag_property)
+      if not monetate_define_re.search(script_source):
+        logging.error('--monetate-flag: %s was not found in script source.', monetate_flag_property)
+        sys.exit(2)
+
+      # Update definition in source.
+      monetate_flag_replacement = '%s = %s;' % (monetate_flag_property, monetate_flag_value)
+      script_source = monetate_define_re.sub(monetate_flag_replacement, script_source)
+
+    out.writelines(script_source.encode('ascii', errors='ignore'))
   elif output_mode == 'compiled':
     logging.warning("""\
 Closure Compiler now natively understands and orders Closure dependencies and
@@ -267,6 +322,10 @@ Please migrate your codebase.
 See:
 https://github.com/google/closure-compiler/wiki/Managing-Dependencies
 """)
+
+    # Pass monetate_flags into compiler as --define compiler_flags.
+    monetate_flags = ['--define=%s' % flag for flag in options.monetate_flags]
+    options.compiler_flags = options.compiler_flags + monetate_flags
 
     # Make sure a .jar is specified.
     if not options.compiler_jar:

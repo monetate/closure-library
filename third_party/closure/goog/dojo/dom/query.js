@@ -1554,5 +1554,6 @@ goog.dom.query = (function() {
 })();
 
 // TODO(arv): Please don't export here since it clobbers dead code elimination.
-goog.exportSymbol('goog.dom.query', goog.dom.query);
-goog.exportSymbol('goog.dom.query.pseudos', goog.dom.query.pseudos);
+// MONETATE: Not exporting symbols to prevent namespace pollution.
+// goog.exportSymbol('goog.dom.query', goog.dom.query);
+// goog.exportSymbol('goog.dom.query.pseudos', goog.dom.query.pseudos);

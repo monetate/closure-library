@@ -486,6 +486,7 @@ goog.dom.DIRECT_ATTRIBUTE_MAP_ = {
   'cellpadding': 'cellPadding',
   'cellspacing': 'cellSpacing',
   'colspan': 'colSpan',
+  'data-redirect': 'data-redirect',
   'frameborder': 'frameBorder',
   'height': 'height',
   'maxlength': 'maxLength',
@@ -1072,6 +1073,47 @@ goog.dom.safeHtmlToNode_ = function(doc, html) {
 goog.dom.childrenToNode_ = function(doc, tempDiv) {
   if (tempDiv.childNodes.length == 1) {
     return tempDiv.removeChild(goog.asserts.assert(tempDiv.firstChild));
+  } else {
+    var fragment = doc.createDocumentFragment();
+    while (tempDiv.firstChild) {
+      fragment.appendChild(tempDiv.firstChild);
+    }
+    return fragment;
+  }
+};
+
+
+/**
+ * Converts an HTML string into a document fragment.
+ * NB: Our slightly older version of closure-templates seems to generate JS calls to
+ *     goog.dom.htmlToDocumentFragment which has since been removed from goog.dom.
+ * 
+ * @param {string} htmlString The HTML string to convert.
+ * @return {!Node} The resulting document fragment.
+ */
+goog.dom.htmlToDocumentFragment = function (htmlString) {
+  return goog.dom.htmlToDocumentFragment_(document, htmlString);
+};
+
+
+/**
+ * Helper for {@code htmlToDocumentFragment}.
+ *
+ * @param {!Document} doc The document.
+ * @param {string} htmlString The HTML string to convert.
+ * @return {!Node} The resulting document fragment.
+ * @private
+ */
+goog.dom.htmlToDocumentFragment_ = function (doc, htmlString) {
+  var tempDiv = doc.createElement('div');
+  if (goog.dom.BrowserFeature.INNER_HTML_NEEDS_SCOPED_ELEMENT) {
+    tempDiv.innerHTML = '<br>' + htmlString;
+    tempDiv.removeChild(tempDiv.firstChild);
+  } else {
+    tempDiv.innerHTML = htmlString;
+  }
+  if (tempDiv.childNodes.length == 1) {
+    return /** @type {!Node} */ (tempDiv.removeChild(tempDiv.firstChild));
   } else {
     var fragment = doc.createDocumentFragment();
     while (tempDiv.firstChild) {
