@@ -663,6 +663,7 @@ goog.inherits(goog.net.BrowserChannel.TimingEvent, goog.events.Event);
 /**
  * The type of event that occurs every time some information about how reachable
  * the server is is discovered.
+ * @const {string}
  */
 goog.net.BrowserChannel.Event.SERVER_REACHABILITY_EVENT = 'serverreachability';
 
@@ -2048,7 +2049,7 @@ goog.net.BrowserChannel.prototype.onInput_ = function(respArray) {
       }
     } else if (this.state_ == goog.net.BrowserChannel.State.OPENED) {
       if (nextArray[0] == 'stop') {
-        if (batch && !goog.array.isEmpty(batch)) {
+        if (batch && !(batch.length === 0)) {
           this.handler_.channelHandleMultipleArrays(this, batch);
           batch.length = 0;
         }
@@ -2071,7 +2072,7 @@ goog.net.BrowserChannel.prototype.onInput_ = function(respArray) {
       this.backChannelRetryCount_ = 0;
     }
   }
-  if (batch && !goog.array.isEmpty(batch)) {
+  if (batch && !(batch.length === 0)) {
     this.handler_.channelHandleMultipleArrays(this, batch);
   }
 };
