@@ -12,7 +12,6 @@
  *
  * This file does not compile correctly with --collapse_properties. Use
  * --property_renaming=ALL_UNQUOTED instead.
- * @suppress {missingRequire} TODO(user): this shouldn't be needed
  */
 
 goog.setTestOnly('goog.testing.TestCase');
@@ -2182,7 +2181,7 @@ goog.testing.TestCase.Result.prototype.isSuccess = function() {
 goog.testing.TestCase.Result.prototype.getSummary = function() {
   'use strict';
   var summary = this.runCount + ' of ' + this.totalCount + ' tests run in ' +
-      this.runTime + 'ms.\n';
+      Math.round(this.runTime) + ' ms.\n';
   if (this.testSuppressed) {
     summary += 'Tests not run because shouldRunTests() returned false.';
   } else {
@@ -2347,7 +2346,7 @@ goog.testing.TestCase.prototype.rejectIfPromiseTimesOut_ = function(
     var timeoutId = self.timeout(function() {
       'use strict';
       var elapsed = self.now() - start;
-      reject(new Error(errorMsg + '\nElapsed time: ' + elapsed + 'ms.'));
+      reject(new Error(errorMsg + '\nElapsed time: ' + elapsed + ' ms.'));
     }, timeoutInMs);
     promise.then(resolve, reject);
     var clearTimeout = goog.bind(self.clearTimeout, self, timeoutId);
